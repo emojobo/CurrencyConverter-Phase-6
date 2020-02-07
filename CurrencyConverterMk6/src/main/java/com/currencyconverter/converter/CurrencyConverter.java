@@ -3,12 +3,14 @@ package com.currencyconverter.converter;
 import com.currencyconverter.dao.CurrencyDaoImpl;
 import com.currencyconverter.jdbc.ConverterJdbc;
 import com.currencyconverter.model.Currency;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.*;
 
+import javax.activation.FileDataSource;
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -18,13 +20,14 @@ import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
 @org.springframework.stereotype.Component
-public class CurrencyConverter extends JPanel implements ActionListener, ItemListener, CommandLineRunner{
-    private static JFrame converter;
+public class CurrencyConverter extends JPanel implements ActionListener, ItemListener {
+    private static JFrame converter = new JFrame();
     private static JTabbedPane tab;
     private static JComboBox convertFrom, convertTo, deleteDrop, editDrop, abbrvDrop, descDrop, rateDrop;
     private static JTextField txtFrom, txtTo, abbrvTxt, currTxt, exchTxt, editAbbrv, editDesc, editRate;
@@ -45,71 +48,45 @@ public class CurrencyConverter extends JPanel implements ActionListener, ItemLis
     private static Statement statement = null;
     private static Currency currObj = new Currency();
 
-    @Override
-    public void run(String...args) throws Exception{
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                constructGui();
-            }
-        });
-    }
+    @Autowired
+    private static CurrencyDaoImpl currencyDao = new CurrencyDaoImpl();
 
     public CurrencyConverter() {
         super(new GridLayout(1, 2));
 
-        Properties exchange = new Properties();
-        Properties curr = new Properties();
+        ConverterJdbc start = new ConverterJdbc();
+        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+        EmbeddedDatabase db = builder.setType(EmbeddedDatabaseType.H2).addScript("data.sql").build();
 
-        try (InputStream stream = CurrencyConverter.class.getClassLoader().getResourceAsStream("currencies.properties")) {
-            curr.load(CurrencyConverter.class.getClassLoader().getResourceAsStream("currencies.properties"));
+        tab = new JTabbedPane();
 
-            try (InputStream flow = CurrencyConverter.class.getClassLoader().getResourceAsStream("exchangeRate.properties")) {
-                exchange.load(CurrencyConverter.class.getClassLoader().getResourceAsStream("exchangeRate.properties"));
+        try {
+            connection = DriverManager.getConnection("jdbc:h2:file:~/CurrencyConverterMk6/src/data/curr", USER, PASS);
+            statement = connection.createStatement();
 
-                ConverterJdbc start = new ConverterJdbc();
-                EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-                EmbeddedDatabase db = builder.setType(EmbeddedDatabaseType.H2).addScript("db/sql/create-db.sql").build();
+            currencyDao.print(statement);
 
-                tab = new JTabbedPane();
+            Component convert = convertTab(statement);
+            Component add = addTab(statement);
+            Component edit = editTab(statement);
+            Component remove = removeTab(statement);
 
-                try {
-                    connection = db.getConnection(USER, PASS);
-                    statement = connection.createStatement();
+            tab.add("Convert", convert);
+            tab.add("Add", add);
+            tab.add("Edit", edit);
+            tab.add("Remove", remove);
 
-                    start.insert(curr, exchange, statement);
-                    start.print(statement);
-
-                    Component convert = convertTab(statement);
-                    Component add = addTab(statement);
-                    Component edit = editTab(statement);
-                    Component remove = removeTab(statement);
-
-                    tab.add("Convert", convert);
-                    tab.add("Add", add);
-                    tab.add("Edit", edit);
-                    tab.add("Remove", remove);
-
-                    add(tab);
-                    tab.setVisible(true);
-                }
-                catch (SQLException e){
-                    e.printStackTrace();
-                }
-            }
-            catch (IOException ex){
-                ex.printStackTrace();
-            }
+            add(tab);
+            tab.setVisible(true);
         }
-        catch (IOException ex){
-            ex.printStackTrace();
+        catch (SQLException e){
+            e.printStackTrace();
         }
     }
 
+    @PostConstruct
     public void constructGui() {
-        converter = new JFrame();
-        converter.add(new CurrencyConverter(), BorderLayout.CENTER);
-
+        converter.add(this, BorderLayout.CENTER);
         converter.pack();
         converter.setTitle("Currency Converter");
         converter.setVisible(true);
@@ -454,6 +431,8 @@ public class CurrencyConverter extends JPanel implements ActionListener, ItemLis
             public void actionPerformed(ActionEvent e) {
                 ConverterFunctions.delete(deleteDrop, statement);
 
+                deleteDrop.removeAllItems();
+                ConverterFunctions.refreshCurrencyDropdown(deleteDrop, statement);
                 convertFrom.removeAllItems();
                 ConverterFunctions.refreshCurrencyDropdown(convertFrom, statement);
                 convertTo.removeAllItems();

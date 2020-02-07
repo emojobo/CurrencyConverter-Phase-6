@@ -11,47 +11,50 @@
         <property name="namedParameterJdbcTemplate" ref="jdbcTemplate" />
     </bean>
 
-    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate" >
-        <!--
-        <property name="dataSource" ref="dataSource" />
-         -->
-        <!--
-        <constructor-arg ref="dbcpDataSource" />
-         -->
-        <constructor-arg ref="dataSource" />
+    <bean id="namedParamterJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate" >
+        <constructor-arg ref="jdbcTemplate"/>
+        <!--&lt;!&ndash;&lt;!&ndash;&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="dataSource" ref="dataSource" />&ndash;&gt;-->
+         <!--&lt;!&ndash;&ndash;&gt;&ndash;&gt;-->
+        <!--&lt;!&ndash;&lt;!&ndash;&ndash;&gt;-->
+        <!--&lt;!&ndash;<constructor-arg ref="dbcpDataSource" />&ndash;&gt;-->
+         <!--&lt;!&ndash;&ndash;&gt;&ndash;&gt;-->
+        <!--&lt;!&ndash;<constructor-arg ref="dataSource" />&ndash;&gt;-->
     </bean>
 
-    <bean id="currencyFunctions" class="com.currencyconverter.converter.ConverterFunctions" >
-        <constructor-arg ref="currencyDao" />
-    </bean>
+    <!--<bean id="currencyFunctions" class="com.currencyconverter.converter.ConverterFunctions" >-->
+        <!--<constructor-arg ref="currencyDao" />-->
+    <!--</bean>-->
 
-    <bean id="currencyConverter" class="com.currencyconverter.converter.CurrencyConverter"/>
+    <!--<bean id="currencyConverter" class="com.currencyconverter.converter.CurrencyConverter"/>-->
 
-    <!-- Start Hsql database manager tool -->
-    <bean depends-on="dataSource"
-          class="org.springframework.beans.factory.com.currencyconverter.config.MethodInvokingBean">
-        <property name="targetClass" value="org.hsqldb.util.DatabaseManagerSwing" />
-        <property name="targetMethod" value="main" />
-        <property name="arguments">
-            <list>
-                <value>--url</value>
-                <value>jdbc:hsqldb:mem:dataSource</value>
-                <value>--user</value>
-                <value>sa</value>
-                <value>--password</value>
-                <value></value>
-            </list>
-        </property>
-    </bean>
+    <!--&lt;!&ndash;&lt;!&ndash; Start Hsql database manager tool &ndash;&gt;&ndash;&gt;-->
+    <!--&lt;!&ndash;&lt;!&ndash;&ndash;&gt;-->
+    <!--&lt;!&ndash;<bean depends-on="dataSource"&ndash;&gt;-->
+          <!--&lt;!&ndash;class="org.springframework.beans.factory.com.currencyconverter.config.MethodInvokingBean">&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="targetClass" value="org.hsqldb.util.DatabaseManagerSwing" />&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="targetMethod" value="main" />&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="arguments">&ndash;&gt;-->
+            <!--&lt;!&ndash;<list>&ndash;&gt;-->
+                <!--&lt;!&ndash;<value>&#45;&#45;url</value>&ndash;&gt;-->
+                <!--&lt;!&ndash;<value>jdbc:hsqldb:mem:dataSource</value>&ndash;&gt;-->
+                <!--&lt;!&ndash;<value>&#45;&#45;user</value>&ndash;&gt;-->
+                <!--&lt;!&ndash;<value>sa</value>&ndash;&gt;-->
+                <!--&lt;!&ndash;<value>&#45;&#45;password</value>&ndash;&gt;-->
+                <!--&lt;!&ndash;<value></value>&ndash;&gt;-->
+            <!--&lt;!&ndash;</list>&ndash;&gt;-->
+        <!--&lt;!&ndash;</property>&ndash;&gt;-->
+    <!--&lt;!&ndash;</bean>&ndash;&gt;-->
+    <!--&lt;!&ndash;&ndash;&gt;&ndash;&gt;-->
 
-    <!--
-    <bean id="dbcpDataSource" class="org.apache.commons.dbcp2.BasicDataSource"
-        destroy-method="close">
-        <property name="driverClassName" value="org.hsqldb.jdbcDriver" />
-        <property name="url" value="jdbc:hsqldb:mem:dataSource" />
-        <property name="username" value="sa" />
-        <property name="password" value="" />
-    </bean>
-      -->
+    <!--&lt;!&ndash;&lt;!&ndash;&ndash;&gt;-->
+    <!--&lt;!&ndash;<bean id="dbcpDataSource" class="org.apache.commons.dbcp2.BasicDataSource"&ndash;&gt;-->
+        <!--&lt;!&ndash;destroy-method="close">&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="driverClassName" value="org.hsqldb.jdbcDriver" />&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="url" value="jdbc:hsqldb:mem:dataSource" />&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="username" value="sa" />&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="password" value="" />&ndash;&gt;-->
+    <!--&lt;!&ndash;</bean>&ndash;&gt;-->
+      <!--&lt;!&ndash;&ndash;&gt;&ndash;&gt;-->
 
-</beans>
+<!--</beans>-->

@@ -8,14 +8,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 public class Application {
-    @Autowired
-    CurrencyConverter currencyConverter;
 
     public static void main(String[] args) {
-        //SpringApplication.run(CurrencyConverter.class, args);
-
-        SpringApplicationBuilder builder = new SpringApplicationBuilder(CurrencyConverter.class);
-        builder.headless(false);
-        ConfigurableApplicationContext context = builder.run(args);
+        String nm = System.setProperty("java.awt.headless", "false");
+        SpringApplication.run(Application.class, args);
     }
 }

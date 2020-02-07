@@ -21,7 +21,7 @@ public class ConverterFunctions {
     public static void refreshCurrencyDropdown(JComboBox currency, Statement statement) {
         Map<String, String> currencyMap = new HashMap<String, String>();
 
-        search.populateDropdown(statement, currencyMap);
+        currencyDao.populateDropdown(statement, currencyMap);
 
         for (Map.Entry mapElement : currencyMap.entrySet()) {
             String key = (String) mapElement.getKey();
@@ -39,20 +39,20 @@ public class ConverterFunctions {
 
         if(Var1.contains("USD")) {
             curr.setAbbrv(exchangeRate2);
-            search.findByAbbrv(curr.getAbbrv(), curr, statement);
+            currencyDao.findByAbbrv(curr.getAbbrv(), curr, statement);
             result = input * curr.getExchangeRate();
         }
         else if(Var2.contains("USD")) {
             curr.setAbbrv(exchangeRate1);
-            search.findByAbbrv(curr.getAbbrv(), curr, statement);
+            currencyDao.findByAbbrv(curr.getAbbrv(), curr, statement);
             result = input / curr.getExchangeRate();
         }
         else {
             curr.setAbbrv(exchangeRate1);
-            search.findByAbbrv(curr.getAbbrv(), curr, statement);
+            currencyDao.findByAbbrv(curr.getAbbrv(), curr, statement);
             Double from = curr.getExchangeRate();
             curr.setAbbrv(exchangeRate2);
-            search.findByAbbrv(curr.getAbbrv(), curr, statement);
+            currencyDao.findByAbbrv(curr.getAbbrv(), curr, statement);
             Double to = curr.getExchangeRate();
             Double rate = to / from;
 
@@ -79,7 +79,7 @@ public class ConverterFunctions {
     public static void edit(String selected, String abbrv, String desc, String rate, Statement statement) {
         String key = selected.substring(0,3);
 
-        search.findByAbbrv(key, curr, statement);
+        currencyDao.findByAbbrv(key, curr, statement);
 
         if(!abbrv.isEmpty()) {
             curr.setAbbrv(abbrv);
